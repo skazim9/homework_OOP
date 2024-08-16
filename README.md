@@ -18,6 +18,13 @@ poetry install
 
 Начало работы приложение: main.py
 
+## Project dependencies:
+The program uses the version Python 3.12.4
+flake8 = "7.1.0"
+black = "24.4.2"
+isort = "5.13.2"
+mypy = "1.10.0"
+
 ## Документация:
 
 отсутствует
