@@ -27,7 +27,7 @@ class Category:
         self.products = products
 
         Category.category_count += 1
-        Category.product_count += 1
+        Category.product_count += len(products)
 
 if __name__ == "__main__":
     product1 = Product("Samsung Galaxy S23 Ultra", "256GB, Серый цвет, 200MP камера", 180000.0, 5)
