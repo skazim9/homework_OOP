@@ -1,5 +1,4 @@
 import pytest
-import unittest
 
 from src.commerce import Product, Category
 
@@ -9,14 +8,6 @@ def samsung():
     return Product("Samsung Galaxy S23 Ultra", "256GB, Серый цвет, 200MP камера", 180000.0, 5)
 
 
-@pytest.fixture
-def category():
-    return Category("Смартфоны",
-                    "Смартфоны, как средство не только коммуникации, но и получения дополнительных функций для "
-                    "удобства жизни",
-                    1)
-
-
 def test_product(samsung):  # тест на продукт
     assert samsung.name == "Samsung Galaxy S23 Ultra"
     assert samsung.description == "256GB, Серый цвет, 200MP камера"
@@ -24,73 +15,59 @@ def test_product(samsung):  # тест на продукт
     assert samsung.quantity == 5
 
 
-def test_category(category):
-    assert category.name == "Смартфоны"
-    assert category.description == ("Смартфоны, как средство не только коммуникации, но и получения дополнительных "
-                                    "функций для удобства жизни")
-    assert category.products == 1
+def test_product_creation():
+    # Фикстура для теста
+    product_data = {
+        "name": "Товар 1",
+        "description": "Описание товара 1",
+        "price": 100.0,
+        "quantity": 20
+    }
+
+    product = Product.new_product(product_data)
+
+    assert product.name == "Товар 1"
+    assert product.description == "Описание товара 1"
+    assert product.price == 100.0
+    assert product.quantity == 20
 
 
-class TestProduct(unittest.TestCase):
-
-    def setUp(self):
-        """Создание объекта Product перед каждым тестом"""
-        self.product = Product(name="Samsung Galaxy",
-                               description="Описание Samsung Galaxy",
-                               price=89000.0,
-                               quantity=5)
-
-    def test_initialization(self):
-        """Тестирование инициализации объекта Product"""
-        self.assertEqual(self.product.name, "Samsung Galaxy")
-        self.assertEqual(self.product.description, "Описание Samsung Galaxy")
-        self.assertEqual(self.product.price, 89000.0)
-        self.assertEqual(self.product.quantity, 5)
-
-    def test_price_setter_valid(self):
-        """Тестирование установки корректной цены"""
-        self.product.price = 15000.0
-        self.assertEqual(self.product.price, 15000.0)
-
-    def test_new_product_creation(self):
-        """Тестирование метода new_product"""
-        new_product_data = {
-            "name": "Iphone 15pro",
-            "description": "Описание Iphone 15pro",
-            "price": 120000.0,
-            "quantity": 7
-        }
-        new_product = Product.new_product(new_product_data)
-        self.assertEqual(new_product.name, "Iphone 15pro")
-        self.assertEqual(new_product.description, "Описание Iphone 15pro")
-        self.assertEqual(new_product.price, 120000.0)
-        self.assertEqual(new_product.quantity, 7)
+def test_product_str_method():
+    product = Product("Товар 2", "Описание товара 2", 150.0, 5)
+    assert str(product) == "Товар 2, 150.0 руб. Остаток: 5 шт."
 
 
-class Product_test:
-    def __init__(self, name: str, price: float, quantity: int) -> None:
-        self.name = name
-        self.price = price
-        self.quantity = quantity
+def test_price_setter():
+    product = Product("Товар 3", "Описание товара 3", 200.0, 10)
+    product.price = 250.0
+    assert product.price == 250.0
+
+    product.price = -50.0  # Попробуем установить отрицательную цену
+    assert product.price != -50.0  # Цена не должна измениться
 
 
-class TestCategory(unittest.TestCase):
+def test_category_creation():
+    product1 = Product("Товар 1", "Описание товара 1", 100.0, 5)
+    product2 = Product("Товар 2", "Описание товара 2", 150.0, 10)
+    category = Category("Категория 1", "Описание категории 1", [product1, product2])
 
-    def setUp(self):
-        self.product1 = Product_test("Samsung Galaxy", 89000.0, 10)
-        self.product2 = Product_test("Iphone 15pro", 120000.0, 5)
-        self.category = Category("Категория Смартофны", "Описание категории Смартфоны", [self.product1, self.product2])
+    assert category.name == "Категория 1"
+    assert category.description == "Описание категории 1"
+    assert len(category.products.split('\n')) - 1 == 2  # количество продуктов
 
-    def test_initialization(self):
-        self.assertEqual(self.category.name, "Категория Смартофны")
-        self.assertEqual(self.category.description, "Описание категории Смартфоны")
-        self.assertEqual(len(self.category.products.splitlines()), 2)
 
-    def test_add_product(self):
-        new_product = Product_test("Товар 3", 200.0, 2)
-        self.category.add_product(new_product)
-        self.assertEqual(len(self.category.products.splitlines()), 3)
-        self.assertIn("Товар 3", self.category.products)
+def test_category_add_product():
+    product = Product("Товар 3", "Описание товара 3", 200.0, 2)
+    category = Category("Категория 2", "Описание категории 2", [])
 
-    def test_product_count(self):
-        self.assertEqual(Category.product_count, 7)
+    category.add_product(product)
+
+    assert len(category.products.split('\n')) - 1 == 1
+
+
+def test_category_all_products_count():
+    product1 = Product("Iphone 15Pro", "Apple", 120000.0, 7)
+    product2 = Product("Galaxy S21", "Samsung", 150000.0, 8)
+    category = Category("Смартфоны", "телефоны для свзяи", [product1, product2])
+
+    assert str(category) == "Смартфоны, количество продуктов: 15 шт."
