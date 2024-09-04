@@ -1,4 +1,17 @@
-class Product:
+from src.base_product import BaseProduct, BaseEntity
+
+
+class PrintMixin:
+    """Класс-миксин для вывода информации о продукте при его инициализации"""
+
+    def __init__(self):
+        print(repr(self))
+
+    def __repr__(self):
+        return f"{self.__class__.__name__}({self.name}, {self.description}, {self.price}, {self.quantity})"
+
+
+class Product(BaseProduct, PrintMixin):
     """ Описание продукта"""
     name: str
     description: str
@@ -10,6 +23,7 @@ class Product:
         self.description = description
         self.price = price
         self.quantity = quantity
+        super().__init__()
 
     def __str__(self):
         return f"{self.name}, {self.price} руб. Остаток: {self.quantity} шт."
@@ -40,7 +54,7 @@ class Product:
             self.__price = value
 
 
-class Category:
+class Category(BaseEntity):
     """ Информация о категориях"""
     name: str
     description: str
@@ -50,6 +64,7 @@ class Category:
     product_count = 0
 
     def __init__(self, name: str, description: str, products: list):
+        super().__init__(name, description)
         self.name = name
         self.description = description
         self.__products = products
@@ -62,7 +77,6 @@ class Category:
         for product in self.__products:
             products_str += f"{str(product)}\n"
         return products_str
-
 
     def add_product(self, product) -> None:
         if isinstance(product, Product):
