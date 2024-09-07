@@ -9,6 +9,13 @@ from src.smartphone import Smartphone
 def samsung():
     return Product("Samsung Galaxy S23 Ultra", "256GB, Серый цвет, 200MP камера", 180000.0, 5)
 
+@pytest.fixture
+def category_p():
+    product1 = Product("Samsung Galaxy S23 Ultra", "256GB, Серый цвет, 200MP камера", 180000.0, 5)
+    product2 = Product("Iphone 15", "512GB, Gray space", 210000.0, 8)
+    product3 = Product("Xiaomi Redmi Note 11", "1024GB, Синий", 31000.0, 14)
+
+    return Category("Смартфоны", "Категория смартфонов", [product1, product2, product3])
 
 def test_product(samsung):  # тест на продукт
     assert samsung.name == "Samsung Galaxy S23 Ultra"
@@ -94,3 +101,24 @@ def test_print_mixin_lawn_grass(capsys):
 
     message = capsys.readouterr()
     assert message.out.strip() == "LawnGrass(Газон для лужайки, Зеленый газон, незамрезающий, 4500.0, 140)"
+
+
+def test_product_zero_quantity():
+    """Проверяет вызов исключения ValueError при нулевом или отрицательном количестве товара"""
+    with pytest.raises(ValueError):
+        Product("Nokia", "A52", 12000.0, 0)
+        Product("Samsung", "Galaxy S9", 40000.0, -10)
+
+def test_category_middle_price(category_p):
+    """Проверяет правильность подсчета средней цены в категории"""
+    assert category_p.middle_price() == 140333.33
+
+
+def test_category_middle_price_empty():
+    """Проверяет вывод нулевого значения средней цены, при отсутствии списка товаров в категории"""
+    cat = Category(
+        "Телевизоры",
+        "Современный телевизор, который позволяет наслаждаться просмотром, " "станет вашим другом и помощником",
+        [],
+    )
+    assert cat.middle_price() == 0

@@ -22,7 +22,12 @@ class Product(BaseProduct, PrintMixin):
         self.name = name
         self.description = description
         self.price = price
-        self.quantity = quantity
+        if quantity <= 0:
+            raise ValueError("Товар с нулевым количеством не может быть добавлен")
+        else:
+            self.quantity = quantity
+        super().__init__()
+
         super().__init__()
 
     def __str__(self):
@@ -88,3 +93,11 @@ class Category(BaseEntity):
     def __str__(self):
         total_quantity = sum(product.quantity for product in self.__products)
         return f"{self.name}, количество продуктов: {total_quantity} шт."
+
+    def middle_price(self):
+        """Метод подсчета средней цены всех товаров категории"""
+        try:
+            avg_price = round(sum([product.price for product in self.__products]) / len(self.__products), 2)
+        except ZeroDivisionError:
+            avg_price = 0
+        return avg_price
